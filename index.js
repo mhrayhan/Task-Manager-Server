@@ -82,6 +82,13 @@ async function todo() {
       const result = await todoCollection.deleteOne(filter);
       res.send(result);
     })
+    // delete completed todo api
+    app.delete('/completed/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const result = await completeCollection.deleteOne(filter);
+      res.send(result);
+    })
 
 
   }
