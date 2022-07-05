@@ -74,6 +74,13 @@ async function todo() {
       const result = await completeCollection.insertOne(todo);
       res.send(result);
     });
+    // get single CompletedTodo data API
+    app.get('/completed/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const completedTodo = await completeCollection.findOne(query);
+      res.send(completedTodo);
+    });
 
     // delete todo api
     app.delete('/todo/:id', async (req, res) => {
