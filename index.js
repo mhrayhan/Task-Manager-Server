@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config()
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId, ObjectID } = require('mongodb');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -16,6 +16,9 @@ app.use(express.json());
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.d4joq.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
+
+
+
 async function todo() {
   try {
     await client.connect();
@@ -23,6 +26,9 @@ async function todo() {
 
     const todoCollection = client.db('todoApp').collection('todos');
     const completeCollection = client.db('todoApp').collection('completed');
+
+
+
 
 
     // edit/update todo
@@ -75,12 +81,19 @@ async function todo() {
       res.send(result);
     });
     // get single CompletedTodo data API
+    // app.get('/completed/:id', async (req, res) => {
+    //   const id = req.params.id;
+    //   console.log(id);
+    //   const query = { _id: ObjectId(id) };
+    //   const result = await completeCollection.findOne(query);
+    //   res.send(result);
+    // });
     app.get('/completed/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
-      const completedTodo = await completeCollection.findOne(query);
-      res.send(completedTodo);
-    });
+      const result = await completeCollection.findOne(query)
+      res.send(result)
+    })
 
     // delete todo api
     app.delete('/todo/:id', async (req, res) => {
@@ -94,6 +107,7 @@ async function todo() {
       const id = req.params.id;
       const filter = { _id: ObjectId(id) };
       const result = await completeCollection.deleteOne(filter);
+      console.log(result);
       res.send(result);
     })
 
@@ -101,8 +115,49 @@ async function todo() {
   }
   finally { }
 }
-
 todo().catch(console.dir);
+
+async function lpg() {
+  try {
+    await client.connect();
+    const lpgPriceCollection = client.db('lpg').collection('price');
+
+
+    app.post('/price', async (req, res) => {
+      const price = req.body;
+      const result = await lpgPriceCollection.insertOne(price);
+      res.send(result);
+    });
+
+    app.get('/price', async (req, res) => {
+      const priceList = await lpgPriceCollection.find().toArray();
+      res.send(priceList);
+    });
+
+    app.put('/price/:id', async (req, res) => {
+      const id = req.params.id;
+      const updatePrice = req.body;
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updatedDoc = {
+        $set: updatePrice
+      }
+      const result = await lpgPriceCollection.updateOne(filter, updatedDoc, options);
+      res.send(result);
+    })
+
+    app.get('/price/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: id }
+      const result = await lpgPriceCollection.findOne(query);
+      res.send(result);
+    });
+
+
+  }
+  finally { }
+}
+lpg().catch(console.dir);
 
 
 app.get('/', (req, res) => {
