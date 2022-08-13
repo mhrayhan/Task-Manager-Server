@@ -142,7 +142,8 @@ async function lpg() {
     app.put('/price/:id', async (req, res) => {
       const id = req.params.id;
       const updatePrice = req.body;
-      const filter = { _id: ObjectId(id) };
+      console.log(id, updatePrice);
+      const filter = { _id: id };
       const options = { upsert: true };
       const updatedDoc = {
         $set: updatePrice
