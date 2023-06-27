@@ -26,7 +26,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 async function todo() {
   try {
-    await client.connect();
+    client.connect();
     console.log('server is connected');
 
     const todoCollection = client.db('todoApp').collection('todos');
@@ -124,7 +124,7 @@ todo().catch(console.dir);
 
 async function lpg() {
   try {
-    await client.connect();
+    client.connect();
     const lpgPriceCollection = client.db('lpg').collection('price');
 
 
